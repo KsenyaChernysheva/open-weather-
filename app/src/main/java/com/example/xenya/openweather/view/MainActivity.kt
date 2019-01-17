@@ -1,7 +1,8 @@
-package com.example.xenya.openweather
+package com.example.xenya.openweather.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.example.xenya.openweather.R
 
 class MainActivity : AppCompatActivity() {
 
