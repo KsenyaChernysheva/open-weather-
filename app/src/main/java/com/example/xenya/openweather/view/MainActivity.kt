@@ -7,11 +7,18 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.xenya.openweather.R
+import com.example.xenya.openweather.database.AppDatabase
+import com.example.xenya.openweather.network.WeatherServiceSingleton
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -68,6 +75,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onLocationProvided(location: Location) {
-        Log.e("LOCATION", "lat: ${location.latitude} long: ${location.longitude}")
+        WeatherServiceSingleton.getInstance()
+                .findByLocation(location.latitude, location.longitude)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map { it.list }
+                .map {
+                    AppDatabase.getInstance(this)
+                            .getCityDao()
+                            .saveAll(it)
+                    it
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { pb_loading.visibility = View.VISIBLE }
+                .doAfterTerminate { pb_loading.visibility = View.GONE }
+                .subscribeBy(onSuccess = {
+                    rv_cities.adapter = WeatherListAdapter(it) {
+                        startActivity(DetailsActivity.getIntent(this, it))
+                    }
+                }, onError = {
+                    Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+                })
     }
 }
