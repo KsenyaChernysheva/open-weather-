@@ -67,15 +67,13 @@ class MainActivity : AppCompatActivity() {
         } ?: kazanLocation()
     }
 
-    private fun kazanLocation(): Location {
-        return Location("").apply {
-            latitude = 55.792115
-            longitude = 49.112339
-        }
+    private fun kazanLocation(): Location = Location("").apply {
+        latitude = 55.792115
+        longitude = 49.112339
     }
 
     private fun onLocationProvided(location: Location) {
-        WeatherServiceSingleton.getInstance()
+        WeatherServiceSingleton.weatherService
                 .findByLocation(location.latitude, location.longitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())

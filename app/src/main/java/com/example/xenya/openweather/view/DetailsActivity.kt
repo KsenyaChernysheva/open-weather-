@@ -3,6 +3,7 @@ package com.example.xenya.openweather.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.database.AppDatabase
@@ -14,11 +15,11 @@ import kotlinx.android.synthetic.main.activity_details.*
 class DetailsActivity : AppCompatActivity() {
 
     companion object {
-        const val CITY_ID = "cityid"
+        const val EXTRA_CITY_ID = "cityid"
 
         fun getIntent(context: Context, cityId: Int) =
                 Intent(context, DetailsActivity::class.java).apply {
-                    putExtra(CITY_ID, cityId)
+                    putExtra(EXTRA_CITY_ID, cityId)
                 }
     }
 
@@ -26,7 +27,7 @@ class DetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        val cityId: Int = intent.getIntExtra(CITY_ID, 0)
+        val cityId: Int = intent.getIntExtra(EXTRA_CITY_ID, 0)
         AppDatabase.getInstance(this)
                 .getCityDao()
                 .getCityById(cityId)
@@ -43,6 +44,9 @@ class DetailsActivity : AppCompatActivity() {
                     tv_pressure.text = it.main.pressure.toString()
                     tv_temperature.text = it.main.temp.toString()
                     tv_wind.text = it.wind?.speed.toString()
+                }, onError = {
+                    Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
                 })
     }
 }
+

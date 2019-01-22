@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.entities.City
+import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_city.view.*
 
 class WeatherListAdapter(
@@ -22,8 +23,8 @@ class WeatherListAdapter(
         holder.bind(list[position], onClick)
     }
 
-    class WeatherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(city: City, onClick: (Int) -> Unit) = with(itemView) {
+    class WeatherViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+        fun bind(city: City, onClick: (Int) -> Unit) = with(containerView) {
             tv_city.text = city.name
             tv_country.text = city.sys?.country
             val temp = city.main.temp

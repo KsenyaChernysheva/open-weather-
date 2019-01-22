@@ -5,19 +5,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object WeatherServiceSingleton {
-    private var instance: WeatherService? = null
+    const val WEATHER_URL = "http://api.openweathermap.org/data/2.5/"
 
-    fun getInstance(): WeatherService {
-        return instance ?: getService().also {
-            instance = it
-        }
+    val weatherService: WeatherService by lazy { getService() }
+
+    private val retrofitInstance: Retrofit by lazy() {
+        getRetrofit()
     }
 
     private fun getService(): WeatherService =
-            Retrofit.Builder()
-                    .baseUrl("http://api.openweathermap.org/data/2.5/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build()
+            retrofitInstance
                     .create(WeatherService::class.java)
+
+    private fun getRetrofit(): Retrofit = Retrofit.Builder()
+            .baseUrl(WEATHER_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
 }
