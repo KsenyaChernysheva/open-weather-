@@ -13,14 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.xenya.openweather.R
-import com.example.xenya.openweather.database.AppDatabase
-import com.example.xenya.openweather.network.WeatherServiceSingleton
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import com.example.xenya.openweather.entities.City
+import com.example.xenya.openweather.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
+
+    var presenter: MainPresenter? = null
+
     companion object {
         const val PERMISSION_REQUEST_LOCATION = 21
     }
@@ -29,7 +29,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        checkLocationPermission()
+        presenter = MainPresenter(this, this)
+
+        presenter?.onCreateView()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -37,62 +39,57 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             PERMISSION_REQUEST_LOCATION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    onLocationProvided(getLocation())
+                    presenter?.onLocationAccessGranted(getLocation())
                 } else {
-                    onLocationProvided(kazanLocation())
+                    presenter?.onLocationAccessNotGranted()
                 }
             }
         }
     }
 
-    private fun checkLocationPermission() {
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.onDestroyView()
+    }
+
+    override fun showError() = Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+
+    override fun showLoading() {
+        pb_loading.visibility = View.VISIBLE
+    }
+
+    override fun hideLoading() {
+        pb_loading.visibility = View.GONE
+    }
+
+    override fun showCities(cities: List<City>) {
+        rv_cities.adapter = WeatherListAdapter(cities) {
+            presenter?.onCityClick(it)
+        }
+    }
+
+    override fun navigateToDetailsView(cityId: Int) {
+        startActivity(DetailsActivity.getIntent(this, cityId))
+    }
+
+    override fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_REQUEST_LOCATION)
         } else {
-            onLocationProvided(getLocation())
+            presenter?.onLocationAccessGranted(getLocation())
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation(): Location {
+    private fun getLocation(): Location? {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
         return locationManager?.let {
             it.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                     ?: it.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                     ?: it.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-                    ?: kazanLocation()
-        } ?: kazanLocation()
-    }
-
-    private fun kazanLocation(): Location = Location("").apply {
-        latitude = 55.792115
-        longitude = 49.112339
-    }
-
-    private fun onLocationProvided(location: Location) {
-        WeatherServiceSingleton.weatherService
-                .findByLocation(location.latitude, location.longitude)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .map { it.list }
-                .map {
-                    AppDatabase.getInstance(this)
-                            .getCityDao()
-                            .saveAll(it)
-                    it
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { pb_loading.visibility = View.VISIBLE }
-                .doAfterTerminate { pb_loading.visibility = View.GONE }
-                .subscribeBy(onSuccess = {
-                    rv_cities.adapter = WeatherListAdapter(it) {
-                        startActivity(DetailsActivity.getIntent(this, it))
-                    }
-                }, onError = {
-                    Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
-                })
+        }
     }
 }
