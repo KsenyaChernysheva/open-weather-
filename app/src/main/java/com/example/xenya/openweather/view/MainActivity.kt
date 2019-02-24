@@ -37,13 +37,12 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            PERMISSION_REQUEST_LOCATION -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            PERMISSION_REQUEST_LOCATION ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter?.onLocationAccessGranted(getLocation())
                 } else {
                     presenter?.onLocationAccessNotGranted()
                 }
-            }
         }
     }
 

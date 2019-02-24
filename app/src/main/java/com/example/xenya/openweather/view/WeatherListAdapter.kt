@@ -23,7 +23,9 @@ class WeatherListAdapter(
         holder.bind(list[position], onClick)
     }
 
-    class WeatherViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    class WeatherViewHolder(
+            override val containerView: View
+    ) : RecyclerView.ViewHolder(containerView), LayoutContainer {
         fun bind(city: City, onClick: (Int) -> Unit) = with(containerView) {
             tv_city.text = city.name
             tv_country.text = city.sys?.country

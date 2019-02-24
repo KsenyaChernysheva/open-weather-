@@ -11,6 +11,11 @@ import io.reactivex.schedulers.Schedulers
 class WeatherModel(
         private val appDatabase: AppDatabase
 ) {
+    companion object {
+        const val KAZAN_LAT = 55.792115
+        const val KAZAN_LON = 49.112339
+    }
+
     fun saveCitiesInDatabase(cities: List<City>) =
             appDatabase.getCityDao().saveAll(cities)
 
@@ -33,7 +38,7 @@ class WeatherModel(
                     .observeOn(AndroidSchedulers.mainThread())
 
     fun getKazanLocation(): Location = Location("").apply {
-        latitude = 55.792115
-        longitude = 49.112339
+        latitude = KAZAN_LAT
+        longitude = KAZAN_LON
     }
 }
