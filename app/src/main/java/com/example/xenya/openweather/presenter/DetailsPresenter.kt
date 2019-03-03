@@ -1,34 +1,34 @@
 package com.example.xenya.openweather.presenter
 
 import android.content.Context
+import com.arellomobile.mvp.InjectViewState
+import com.arellomobile.mvp.MvpPresenter
 import com.example.xenya.openweather.database.AppDatabase
 import com.example.xenya.openweather.model.WeatherModel
 import com.example.xenya.openweather.view.DetailsView
 import io.reactivex.rxkotlin.subscribeBy
 
+@InjectViewState
 class DetailsPresenter(
-        var view: DetailsView?,
         val cityId: Int
-) {
+) : MvpPresenter<DetailsView>() {
     private var model: WeatherModel? = null
 
-    constructor(view: DetailsView?, cityId: Int, context: Context) : this(view, cityId) {
-        model = WeatherModel(AppDatabase.getInstance(context))
-
+    override fun onFirstViewAttach() {
         model?.let {
             it.getCityFromDbById(cityId)
                     .subscribeBy(onSuccess = {
                         if (it.sys?.country.isNullOrEmpty()) {
                             it.sys?.country = "DIO"
                         }
-                        view?.showContent(it)
+                        viewState.showContent(it)
                     }, onError = {
-                        view?.showError()
+                        viewState.showError()
                     })
         }
     }
 
-    fun destroyView() {
-        view = null
+    constructor(cityId: Int, context: Context) : this(cityId) {
+        model = WeatherModel(AppDatabase.getInstance(context))
     }
 }

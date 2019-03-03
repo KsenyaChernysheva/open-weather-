@@ -9,29 +9,30 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.arellomobile.mvp.MvpAppCompatActivity
+import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.entities.City
 import com.example.xenya.openweather.presenter.MainPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), MainView {
-
-    var presenter: MainPresenter? = null
+class MainActivity : MvpAppCompatActivity(), MainView {
+    @InjectPresenter
+    lateinit var presenter: MainPresenter
 
     companion object {
         const val PERMISSION_REQUEST_LOCATION = 21
     }
 
+    @ProvidePresenter
+    fun providePresenter() = MainPresenter(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        presenter = MainPresenter(this, this)
-
-        presenter?.onCreateView()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -39,16 +40,11 @@ class MainActivity : AppCompatActivity(), MainView {
         when (requestCode) {
             PERMISSION_REQUEST_LOCATION ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter?.onLocationAccessGranted(getLocation())
+                    presenter.onLocationAccessGranted(getLocation())
                 } else {
-                    presenter?.onLocationAccessNotGranted()
+                    presenter.onLocationAccessNotGranted()
                 }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter?.onDestroyView()
     }
 
     override fun showError() = Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
@@ -63,7 +59,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
     override fun showCities(cities: List<City>) {
         rv_cities.adapter = WeatherListAdapter(cities) {
-            presenter?.onCityClick(it)
+            presenter.onCityClick(it)
         }
     }
 
@@ -78,7 +74,7 @@ class MainActivity : AppCompatActivity(), MainView {
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_REQUEST_LOCATION)
         } else {
-            presenter?.onLocationAccessGranted(getLocation())
+            presenter.onLocationAccessGranted(getLocation())
         }
     }
 
