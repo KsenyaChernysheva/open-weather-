@@ -47,7 +47,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         }
     }
 
-    override fun showError() = Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+    override fun showError() = Toast.makeText(this, "Error occured. Show data from database", Toast.LENGTH_SHORT).show()
 
     override fun showLoading() {
         pb_loading.visibility = View.VISIBLE

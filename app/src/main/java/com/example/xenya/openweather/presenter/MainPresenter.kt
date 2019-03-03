@@ -28,14 +28,17 @@ class MainPresenter() : MvpPresenter<MainView>() {
     fun onCityClick(cityId: Int) = viewState.navigateToDetailsView(cityId)
 
     private fun loadWeatherByLocation(location: Location?) {
-        model?.let {
-            val notNullLocation: Location = location ?: it.getKazanLocation()
-            it.loadWeatherByLocation(notNullLocation.latitude, notNullLocation.longitude)
+        model?.let { weatherModel ->
+            val notNullLocation: Location = location ?: weatherModel.getKazanLocation()
+            weatherModel.loadWeatherByLocation(notNullLocation.latitude, notNullLocation.longitude)
                     .doOnSubscribe { viewState.showLoading() }
                     .doAfterTerminate { viewState.hideLoading() }
                     .subscribeBy(onSuccess = {
                         viewState.showCities(it)
                     }, onError = {
+                        weatherModel.getCitiesFromDb().subscribeBy {
+                            viewState.showCities(it)
+                        }
                         viewState.showError()
                     })
         }

@@ -19,6 +19,12 @@ class WeatherModel(
     fun saveCitiesInDatabase(cities: List<City>) =
             appDatabase.getCityDao().saveAll(cities)
 
+    fun getCitiesFromDb(): Single<List<City>> =
+            appDatabase.getCityDao()
+                    .getAll()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+
     fun getCityFromDbById(cityId: Int): Single<City> =
             appDatabase.getCityDao()
                     .getCityById(cityId)
