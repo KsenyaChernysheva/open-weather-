@@ -14,7 +14,8 @@ import kotlinx.android.synthetic.main.item_forecast.*
 class ForecastAdapter(val list: List<City>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder =
-            ForecastAdapter.ForecastViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_forecast, parent, false))
+            ForecastAdapter.ForecastViewHolder(LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_forecast, parent, false))
 
     override fun getItemCount(): Int = list.size
 
