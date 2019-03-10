@@ -17,6 +17,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.entities.City
 import com.example.xenya.openweather.presenter.MainPresenter
+import com.example.xenya.openweather.view.adapters.WeatherListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : MvpAppCompatActivity(), MainView {

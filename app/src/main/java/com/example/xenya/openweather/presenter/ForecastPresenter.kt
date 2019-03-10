@@ -5,30 +5,27 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.example.xenya.openweather.database.AppDatabase
 import com.example.xenya.openweather.model.WeatherModel
-import com.example.xenya.openweather.view.DetailsView
+import com.example.xenya.openweather.view.ForecastView
 import io.reactivex.rxkotlin.subscribeBy
 
 @InjectViewState
-class DetailsPresenter(
+class ForecastPresenter(
         val cityId: Int
-) : MvpPresenter<DetailsView>() {
+) : MvpPresenter<ForecastView>() {
     private var model: WeatherModel? = null
 
     override fun onFirstViewAttach() {
         model?.let {
-            it.getCityFromDbById(cityId)
+            it.loadForecastById(cityId)
+                    .doOnSubscribe { viewState.showLoading() }
+                    .doAfterTerminate { viewState.hideLoading() }
                     .subscribeBy(onSuccess = {
-                        if (it.sys?.country.isNullOrEmpty()) {
-                            it.sys?.country = "DIO"
-                        }
-                        viewState.showContent(it)
+                        viewState.showForecast(it)
                     }, onError = {
                         viewState.showError()
                     })
         }
     }
-
-    fun onClickButton() = viewState.navigateToForecast(cityId)
 
     constructor(cityId: Int, context: Context) : this(cityId) {
         model = WeatherModel(AppDatabase.getInstance(context))

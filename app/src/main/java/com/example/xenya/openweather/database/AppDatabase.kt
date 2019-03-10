@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.xenya.openweather.entities.City
 
-@Database(entities = [City::class], version = 1)
+@Database(entities = [City::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "weather"
