@@ -2,42 +2,44 @@ package com.example.xenya.openweather.presenter
 
 import android.content.Context
 import android.location.Location
+import com.arellomobile.mvp.InjectViewState
+import com.arellomobile.mvp.MvpPresenter
 import com.example.xenya.openweather.database.AppDatabase
 import com.example.xenya.openweather.model.WeatherModel
 import com.example.xenya.openweather.view.MainView
 import io.reactivex.rxkotlin.subscribeBy
 
-class MainPresenter(var view: MainView?) {
+@InjectViewState
+class MainPresenter() : MvpPresenter<MainView>() {
     private var model: WeatherModel? = null
 
-    constructor(view: MainView?, context: Context) : this(view) {
+    constructor(context: Context) : this() {
         model = WeatherModel(AppDatabase.getInstance(context))
     }
 
-    fun onCreateView() {
-        view?.checkLocationPermission()
+    override fun onFirstViewAttach() {
+        viewState.checkLocationPermission()
     }
 
     fun onLocationAccessGranted(location: Location?) = loadWeatherByLocation(location)
 
     fun onLocationAccessNotGranted() = loadWeatherByLocation(null)
 
-    fun onCityClick(cityId: Int) = view?.navigateToDetailsView(cityId)
-
-    fun onDestroyView() {
-        view = null
-    }
+    fun onCityClick(cityId: Int) = viewState.navigateToDetailsView(cityId)
 
     private fun loadWeatherByLocation(location: Location?) {
-        model?.let {
-            val notNullLocation: Location = location ?: it.getKazanLocation()
-            it.loadWeatherByLocation(notNullLocation.latitude, notNullLocation.longitude)
-                    .doOnSubscribe { view?.showLoading() }
-                    .doAfterTerminate { view?.hideLoading() }
+        model?.let { weatherModel ->
+            val notNullLocation: Location = location ?: weatherModel.getKazanLocation()
+            weatherModel.loadWeatherByLocation(notNullLocation.latitude, notNullLocation.longitude)
+                    .doOnSubscribe { viewState.showLoading() }
+                    .doAfterTerminate { viewState.hideLoading() }
                     .subscribeBy(onSuccess = {
-                        view?.showCities(it)
+                        viewState.showCities(it)
                     }, onError = {
-                        view?.showError()
+                        weatherModel.getCitiesFromDb().subscribeBy {
+                            viewState.showCities(it)
+                        }
+                        viewState.showError()
                     })
         }
 

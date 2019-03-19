@@ -1,4 +1,4 @@
-package com.example.xenya.openweather.view
+package com.example.xenya.openweather.view.adapters
 
 import android.view.LayoutInflater
 import android.view.View

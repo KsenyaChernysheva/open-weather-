@@ -10,5 +10,7 @@ data class WeatherResponse(
         @SerializedName("list")
         var list: List<City> = listOf(),
         @SerializedName("message")
-        var message: String? = ""
+        var message: String? = "",
+        @SerializedName("city")
+        var city: CityForecast? = null
 )

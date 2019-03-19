@@ -25,5 +25,7 @@ data class City(
         var sys: Sys? = Sys(),
         @Embedded(prefix = "wind")
         @SerializedName("wind")
-        var wind: Wind? = Wind()
+        var wind: Wind? = Wind(),
+        @SerializedName("dt_txt")
+        var date_time: String? = ""
 )

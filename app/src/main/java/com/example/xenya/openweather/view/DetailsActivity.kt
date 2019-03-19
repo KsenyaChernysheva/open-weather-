@@ -4,17 +4,27 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.arellomobile.mvp.MvpAppCompatActivity
+import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.entities.City
 import com.example.xenya.openweather.presenter.DetailsPresenter
 import kotlinx.android.synthetic.main.activity_details.*
 
-class DetailsActivity : AppCompatActivity(), DetailsView {
-    private var presenter: DetailsPresenter? = null
+class DetailsActivity : MvpAppCompatActivity(), DetailsView {
+
+    @InjectPresenter
+    lateinit var presenter: DetailsPresenter
+
+    @ProvidePresenter
+    fun providePresenter(): DetailsPresenter = DetailsPresenter(
+            intent.getIntExtra(EXTRA_CITY_ID, 0),
+            this
+    )
 
     companion object {
-        const val EXTRA_CITY_ID = "cityid"
+        private const val EXTRA_CITY_ID = "cityid"
 
         fun getIntent(context: Context, cityId: Int) =
                 Intent(context, DetailsActivity::class.java).apply {
@@ -26,9 +36,9 @@ class DetailsActivity : AppCompatActivity(), DetailsView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        val cityId: Int = intent.getIntExtra(EXTRA_CITY_ID, 0)
-
-        presenter = DetailsPresenter(this, cityId, this)
+        btn_details.setOnClickListener {
+            presenter.onClickButton()
+        }
     }
 
     override fun showError() =
@@ -42,8 +52,8 @@ class DetailsActivity : AppCompatActivity(), DetailsView {
         tv_wind.text = city.wind?.speed.toString()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter?.destroyView()
+    override fun navigateToForecast(cityId: Int) {
+        val intent = ForecastActivity.getIntent(this, cityId)
+        startActivity(intent)
     }
 }
