@@ -1,21 +1,23 @@
 package com.example.xenya.openweather.presenter
 
-import android.content.Context
 import android.location.Location
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import com.example.xenya.openweather.database.AppDatabase
+import com.example.xenya.openweather.App
 import com.example.xenya.openweather.model.WeatherModel
 import com.example.xenya.openweather.view.MainView
 import io.reactivex.rxkotlin.subscribeBy
+import javax.inject.Inject
 
 @InjectViewState
-class MainPresenter() : MvpPresenter<MainView>() {
-    private var model: WeatherModel? = null
+class MainPresenter : MvpPresenter<MainView>() {
 
-    constructor(context: Context) : this() {
-        model = WeatherModel(AppDatabase.getInstance(context))
+    init {
+        App.appComponent.inject(this)
     }
+
+    @Inject
+    lateinit var model: WeatherModel
 
     override fun onFirstViewAttach() {
         viewState.checkLocationPermission()
@@ -28,7 +30,7 @@ class MainPresenter() : MvpPresenter<MainView>() {
     fun onCityClick(cityId: Int) = viewState.navigateToDetailsView(cityId)
 
     private fun loadWeatherByLocation(location: Location?) {
-        model?.let { weatherModel ->
+        model.let { weatherModel ->
             val notNullLocation: Location = location ?: weatherModel.getKazanLocation()
             weatherModel.loadWeatherByLocation(notNullLocation.latitude, notNullLocation.longitude)
                     .doOnSubscribe { viewState.showLoading() }

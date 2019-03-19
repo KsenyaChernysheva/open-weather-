@@ -23,8 +23,7 @@ class ForecastActivity : MvpAppCompatActivity(), ForecastView {
 
     @ProvidePresenter
     fun providePresenter(): ForecastPresenter = ForecastPresenter(
-            intent.getIntExtra(EXTRA_CITY_ID, 0),
-            this
+            intent.getIntExtra(EXTRA_CITY_ID, 0)
     )
 
     override fun showError() {

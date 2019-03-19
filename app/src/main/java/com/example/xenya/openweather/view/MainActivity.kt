@@ -13,7 +13,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.example.xenya.openweather.R
 import com.example.xenya.openweather.entities.City
 import com.example.xenya.openweather.presenter.MainPresenter
@@ -27,9 +26,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     companion object {
         const val PERMISSION_REQUEST_LOCATION = 21
     }
-
-    @ProvidePresenter
-    fun providePresenter() = MainPresenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

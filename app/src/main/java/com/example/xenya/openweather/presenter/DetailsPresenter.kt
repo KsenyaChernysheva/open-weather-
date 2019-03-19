@@ -1,21 +1,23 @@
 package com.example.xenya.openweather.presenter
 
-import android.content.Context
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import com.example.xenya.openweather.database.AppDatabase
+import com.example.xenya.openweather.App
 import com.example.xenya.openweather.model.WeatherModel
 import com.example.xenya.openweather.view.DetailsView
 import io.reactivex.rxkotlin.subscribeBy
+import javax.inject.Inject
 
 @InjectViewState
 class DetailsPresenter(
         val cityId: Int
 ) : MvpPresenter<DetailsView>() {
-    private var model: WeatherModel? = null
+
+    @Inject
+    lateinit var model: WeatherModel
 
     override fun onFirstViewAttach() {
-        model?.let {
+        model.let {
             it.getCityFromDbById(cityId)
                     .subscribeBy(onSuccess = {
                         if (it.sys?.country.isNullOrEmpty()) {
@@ -30,7 +32,7 @@ class DetailsPresenter(
 
     fun onClickButton() = viewState.navigateToForecast(cityId)
 
-    constructor(cityId: Int, context: Context) : this(cityId) {
-        model = WeatherModel(AppDatabase.getInstance(context))
+    init {
+        App.appComponent.inject(this)
     }
 }

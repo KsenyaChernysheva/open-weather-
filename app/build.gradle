@@ -32,6 +32,10 @@ androidExtensions {
 dependencies {
     def room_version = "2.1.0-alpha03"
 
+    implementation 'com.google.dagger:dagger-android:2.21'
+    implementation 'com.google.dagger:dagger-android-support:2.21'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.21'
+    kapt 'com.google.dagger:dagger-compiler:2.21'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'tech.schoolhelper:moxy-x-androidx:1.5.7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

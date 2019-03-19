@@ -19,8 +19,7 @@ class DetailsActivity : MvpAppCompatActivity(), DetailsView {
 
     @ProvidePresenter
     fun providePresenter(): DetailsPresenter = DetailsPresenter(
-            intent.getIntExtra(EXTRA_CITY_ID, 0),
-            this
+            intent.getIntExtra(EXTRA_CITY_ID, 0)
     )
 
     companion object {
