@@ -38,11 +38,11 @@ detekt {
     reports {
         xml {
             enabled = true
-            destination = file("build/reports/detekt.xml")
+            destination = file("app/build/reports/detekt.xml")
         }
         html {
             enabled = true
-            destination = file("build/reports/detekt.html")
+            destination = file("app/build/reports/detekt.html")
         }
     }
 }

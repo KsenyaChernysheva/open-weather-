@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">OpenWeather</string>
+    <string name="app_name">Погода</string>
+    <string name="city">Город, страна</string>
+    <string name="temperature">Температура</string>
+    <string name="humidity">Влажность</string>
+    <string name="pressure">Давление</string>
+    <string name="wind_speed">Скорость ветра</string>
 </resources>
