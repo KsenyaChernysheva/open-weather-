@@ -24,7 +24,7 @@ class DetailsActivity : MvpAppCompatActivity(), DetailsView {
     )
 
     companion object {
-        const val EXTRA_CITY_ID = "cityid"
+        private const val EXTRA_CITY_ID = "cityid"
 
         fun getIntent(context: Context, cityId: Int) =
                 Intent(context, DetailsActivity::class.java).apply {
@@ -35,6 +35,10 @@ class DetailsActivity : MvpAppCompatActivity(), DetailsView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+
+        btn_details.setOnClickListener {
+            presenter.onClickButton()
+        }
     }
 
     override fun showError() =
@@ -46,5 +50,10 @@ class DetailsActivity : MvpAppCompatActivity(), DetailsView {
         tv_pressure.text = city.main.pressure.toString()
         tv_temperature.text = city.main.temp.toString()
         tv_wind.text = city.wind?.speed.toString()
+    }
+
+    override fun navigateToForecast(cityId: Int) {
+        val intent = ForecastActivity.getIntent(this, cityId)
+        startActivity(intent)
     }
 }

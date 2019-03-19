@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.DetailsActivity" />
+        <activity android:name=".view.ForecastActivity" />
     </application>
 
 </manifest>

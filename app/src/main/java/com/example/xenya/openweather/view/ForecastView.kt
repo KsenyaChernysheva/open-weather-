@@ -4,15 +4,18 @@ import com.arellomobile.mvp.MvpView
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
-import com.example.xenya.openweather.entities.City
+import com.example.xenya.openweather.entities.WeatherResponse
 
-interface DetailsView : MvpView {
+interface ForecastView : MvpView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showError()
 
-    @StateStrategyType(SingleStateStrategy::class)
-    fun showContent(city: City)
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showLoading()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun navigateToForecast(cityId: Int)
+    fun hideLoading()
+
+    @StateStrategyType(SingleStateStrategy::class)
+    fun showForecast(weatherResponse: WeatherResponse)
 }
